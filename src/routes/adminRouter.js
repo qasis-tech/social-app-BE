@@ -1,0 +1,27 @@
+import express from "express";
+const router = express.Router();
+import userController from "../api/userController.js";
+import postController from "../api/postController.js";
+import adsController from "../api/adsController.js";
+router.post("/", function (req, res, next) {
+  res.send("welcome to adminPanel");
+});
+router.post("/user",userController.addUser);
+router.post("/login",userController.login);
+router.get("/user", userController.viewUsers);
+router.put("/user/:id",userController.editUsers);
+router.delete("/user/:id", userController.deleteUsers);
+router.get("/user/:id", userController.viewUserDetails);
+router.post("/post",postController.addPost);
+router.get("/post", postController.viewPosts);
+router.put("/post/:id",postController.editPosts);
+router.delete("/post/:id", postController.deletePost);
+router.get("/post/:id", postController.viewPostDetails);
+router.put("/comments",postController.addComments);
+router.put("/comments/:id",postController.approveComments);
+router.post("/ads",adsController.addAds);
+router.get("/ads", adsController.viewAds);
+router.put("/ads/:id",adsController.editAds);
+router.delete("/ads/:id", adsController.deleteAds);
+router.get("/ads/:id", adsController.viewAdsDetails);
+export default router;
