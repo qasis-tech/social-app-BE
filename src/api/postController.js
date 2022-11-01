@@ -1,4 +1,5 @@
 import Post from "../config/model/post.js";
+import User from "../config/model/user.js";
 import multer from "multer";
 const ObjectId = mongoose.Types.ObjectId;
 import mongoose from "mongoose";
@@ -57,25 +58,32 @@ export default {
             success: false,
           });
         }
-        const { title } = req.body;
-        let newFilename = req?.files[0]?.originalname.split(" ").join("_");
-        Post.create({
-          title,
-          image: `http://${host}/${newFilename.replaceAll("\\", "/")}`,
-        }).then((newPost) => {
-          if (!newPost) {
-            return res.status(200).send({
-              data: [],
-              message: "Failed to create new post..!",
-              success: false,
+        const { title, user } = req.body;
+        if (user) {
+          User.find({
+            _id: user,
+          }).then((cUser) => {
+            let newFilename = req?.files[0]?.originalname.split(" ").join("_");
+            Post.create({
+              title,
+              image: `http://${host}/${newFilename.replaceAll("\\", "/")}`,
+              user: cUser,
+            }).then((newPost) => {
+              if (!newPost) {
+                return res.status(200).send({
+                  data: [],
+                  message: "Failed to create new post..!",
+                  success: false,
+                });
+              }
+              res.status(200).send({
+                data: newPost,
+                message: "Post created successfully..!",
+                success: true,
+              });
             });
-          }
-          res.status(200).send({
-            data: newPost,
-            message: "Post created successfully..!",
-            success: true,
           });
-        });
+        }
       });
     } catch (error) {
       console.log("error", error);
@@ -141,7 +149,7 @@ export default {
             success: false,
           });
         }
-             if (mongoose.Types.ObjectId.isValid(req.params.id) === true) {
+        if (mongoose.Types.ObjectId.isValid(req.params.id) === true) {
           const { title } = req.body;
           const post = Post.find({ _id: req.params.id });
           if (post.length === 0) {
@@ -358,6 +366,8 @@ export default {
   },
   approveComments: async (req, res) => {
     try {
+      console.log("req ================> ", req.body.status);
+
       if (mongoose.Types.ObjectId.isValid(req.params.id) === true) {
         Post.find({ "$comments._id": req.params.id }).then((post) => {
           if (post.length === 0) {
@@ -371,7 +381,11 @@ export default {
               {
                 "comments._id": ObjectId(req.params.id),
               },
-              { $set: { "comments.$.status": "denied" } }
+              {
+                $set: {
+                  "comments.$.status": req.body.status ? "approve" : "denied",
+                },
+              }
             ).then((post) => {
               res.status(200).send({
                 data: [],
