@@ -305,11 +305,11 @@ export default {
           });
         }
         if (req?.files[0]?.path === undefined) {
-          return res.status(200).send({
-            data: [],
-            message: "Profile pic required!",
-            success: false,
-          });
+          // return res.status(200).send({
+          //   data: [],
+          //   message: "Profile pic required!",
+          //   success: false,
+          // });
         }
         if (!req.body.username) {
           return res.status(200).send({
@@ -318,10 +318,10 @@ export default {
             success: false,
           });
         }
-      
+
         if (mongoose.Types.ObjectId.isValid(req.params.id) === true) {
           const { fullName, age, dob, gender, email, bio, username } = req.body;
-          let newFilename = req?.files[0]?.originalname.split(" ").join("_");
+          // let newFilename = req?.files[0]?.originalname.split(" ").join("_");
           const user = User.find({ _id: req.params.id });
           if (user.length === 0) {
             return res.status(200).send({
@@ -339,10 +339,11 @@ export default {
                 gender,
                 email,
                 bio,
-                profilePic: `http://${host}/${newFilename.replaceAll(
-                  "\\",
-                  "/"
-                )}`,
+                profilePic: null,
+                // `http://${host}/${newFilename.replaceAll(
+                //   "\\",
+                //   "/"
+                // )}`,
                 username,
               },
               {

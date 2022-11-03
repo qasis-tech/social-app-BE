@@ -366,8 +366,6 @@ export default {
   },
   approveComments: async (req, res) => {
     try {
-      console.log("req ================> ", req.body.status);
-
       if (mongoose.Types.ObjectId.isValid(req.params.id) === true) {
         Post.find({ "$comments._id": req.params.id }).then((post) => {
           if (post.length === 0) {
